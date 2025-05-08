@@ -1,0 +1,40 @@
+
+/* i.MX8M device-tree fragment for OX05B1S 4‑lane sensor */
+&i2c3 { /* change to the I2C bus used on your board */
+    status = "okay";
+    ox05b1s@6c {
+        compatible = "oxsemi,ox05b1s";
+        reg = <0x6c>;
+        clocks = <&clk IMX8MQ_CLK_CSI1>; /* example clock phandle */
+        clock-names = "xvclk";
+        reset-gpios = <&gpio1 5 GPIO_ACTIVE_LOW>; /* adjust */
+
+        ports {
+            #address-cells = <1>;
+            #size-cells = <0>;
+
+            port@0 {
+                reg = <0>;
+                ox05b1s_out: endpoint {
+                    remote-endpoint = <&mipi_csi2_in>;
+                    data-lanes = <1 2 3 4>;
+                    clock-lanes = <0>;
+                    link-frequencies = /bits/ 64 <1050000000>;
+                };
+            };
+        };
+    };
+};
+
+&mipi_csi_2 {
+    status = "okay";
+    /* RX port */
+    port@0 {
+        reg = <0>;
+        mipi_csi2_in: endpoint {
+            remote-endpoint = <&ox05b1s_out>;
+            data-lanes = <1 2 3 4>;
+            clock-lanes = <0>;
+        };
+    };
+};
